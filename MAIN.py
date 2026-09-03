@@ -91,7 +91,7 @@ except Exception as e:
 
 try:
     df = pd.DataFrame(contents)
-    print(df)
+    df.insert(0, "Data_Extracao", pd.Timestamp.now())
     print(OK, "Scraping de dados feito com sucesso")
 except Exception as e:
     print(ERRO, f"Falha ao criar o DataFrame: {e}")
