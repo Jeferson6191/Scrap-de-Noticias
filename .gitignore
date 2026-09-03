@@ -216,3 +216,16 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Selenium / Chrome drivers
+#   Os binários do Chrome e do chromedriver são grandes e específicos
+#   de plataforma. Baixe manualmente de https://googlechromelabs.github.io/chrome-for-testing/
+linux_drivers/
+windows_drivers/
+
+.claude/
+
+# Logs
+logs/
+*.log
+
