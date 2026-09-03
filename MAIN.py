@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from dotenv import load_dotenv
+from sqlalchemy import create_engine, inspect, text
 import time
 import os
 
@@ -15,10 +16,14 @@ load_dotenv()
 INFO = (Style.BRIGHT + "[INFO]" + Style.RESET_ALL)
 ERRO = (Fore.RED + "[ERRO]" + Fore.RESET)
 OK = (Fore.GREEN + "[OK]"+ Fore.RESET)
-SENHA_BANCO = os.getenv("SENHA")
+SENHA = os.environ["SENHA"]
+USUARIO = os.environ["USUARIO"]
+PORTA = os.environ["PORTA"]
+NOME_DO_BANCO = os.environ["NOME_DO_BANCO"]
+HOST = os.environ["HOST"]
 
-print(SENHA_BANCO)
 caminho = "https://news.google.com/"
+
 #config web driver
 options = Options()
 options.add_argument("--headless")
@@ -50,6 +55,18 @@ for htmls in a:
 
 df = pd.DataFrame(contents)
 print(df)
-
-input("aperte enter para parar")
 driver.quit()
+
+print(OK, "Scraping de dados feito com sucesso")
+print(INFO, "Iniciando transferencia para banco de dados")
+engine = create_engine(f'postgresql+psycopg2://{USUARIO}:{SENHA}@{HOST}:{PORTA}/{NOME_DO_BANCO}')
+insp = inspect(engine)
+
+if "Noticias" not in insp.get_table_names():
+    print(INFO, f"A tabela Noticias não foi encontrada, criando do zero...")
+    df.to_sql("Noticias",con=engine,method="multi",if_exists="replace",chunksize=1500, index=False)
+else:
+    with engine.connect() as connection:
+        connection.execute(text(""" TRUNCATE TABLE "Noticias"  """))
+        connection.commit()
+    df.to_sql("Noticias",con=engine,method="multi",if_exists="append",chunksize=1500, index=False)
