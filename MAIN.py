@@ -8,6 +8,7 @@ from selenium.webdriver.chrome.service import Service
 from dotenv import load_dotenv
 from datetime import datetime
 from sqlalchemy import create_engine, inspect, text
+import subprocess
 import time
 import os
 
@@ -138,3 +139,10 @@ finally:
             print(INFO, "Conexao com o banco encerrada")
     except Exception as e:
         print(ERRO, f"Falha ao encerrar conexao com o banco: {e}")
+
+try:
+    print(INFO,"Executando subprocesso para envio de email")
+    subprocess.run([".venv/bin/python","Sender.py"],check=True)
+    print(OK,"Script de envio de email concluido com sucesso")
+except:
+    print(ERRO,"Ocorreu um erro ao executar script de envio de email")
