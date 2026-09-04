@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from dotenv import load_dotenv
+from datetime import datetime
 from sqlalchemy import create_engine, inspect, text
 import time
 import os
@@ -38,6 +39,7 @@ caminho = "https://news.google.com/"
 #config web driver
 options = Options()
 options.add_argument("--headless")
+
 try:
     if os.name == "posix":
         options.binary_location = os.path.join(os.path.abspath("linux_drivers"), "chrome-linux64","chrome")
@@ -91,7 +93,8 @@ except Exception as e:
 
 try:
     df = pd.DataFrame(contents)
-    df.insert(0, "Data_Extracao", pd.Timestamp.now())
+    print(df)
+    df.insert(0, "Data_Extracao", pd.Timestamp.now().replace(hour=0,minute=0,second=0,microsecond=0))
     print(OK, "Scraping de dados feito com sucesso")
 except Exception as e:
     print(ERRO, f"Falha ao criar o DataFrame: {e}")
@@ -121,7 +124,7 @@ try:
         print(OK, "Tabela criada e dados inseridos")
     else:
         with engine.connect() as connection:
-            connection.execute(text(""" TRUNCATE TABLE "Noticias"  """))
+            connection.execute(text(f""" delete from "Noticias" WHERE "Data_Extracao" >= '{datetime.now().replace(hour=0,minute=0,second=0,microsecond=0)}' """))
             connection.commit()
         df.to_sql("Noticias",con=engine,method="multi",if_exists="append",chunksize=1500, index=False)
         print(OK, "Dados inseridos na tabela existente")
