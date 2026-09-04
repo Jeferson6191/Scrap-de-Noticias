@@ -94,7 +94,6 @@ except Exception as e:
 
 try:
     df = pd.DataFrame(contents)
-    print(df)
     df.insert(0, "Data_Extracao", pd.Timestamp.now().replace(hour=0,minute=0,second=0,microsecond=0))
     print(OK, "Scraping de dados feito com sucesso")
 except Exception as e:

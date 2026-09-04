@@ -5,7 +5,6 @@ from colorama import Fore, Style
 from dotenv import load_dotenv
 import os
 
-#class dos titulos JtKRv
 try:
     load_dotenv()
     print(INFO if (INFO := (Style.BRIGHT + "[INFO]" + Style.RESET_ALL)) else "", "Variaveis de ambiente carregadas")
